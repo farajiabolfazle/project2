@@ -1,8 +1,9 @@
 name: Build VCam APK
 
 on:
-  push:
   workflow_dispatch:
+  push:
+    branches: [ main, master ]
 
 jobs:
   build:
@@ -15,10 +16,10 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: "17"
+          java-version: 17
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
+      - name: Accept Android SDK licenses
+        run: yes | sdkmanager --licenses > /dev/null 2>&1 || true
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
@@ -28,7 +29,7 @@ jobs:
       - name: Build debug APK
         run: cd android_module && gradle assembleDebug --no-daemon --stacktrace
 
-      - name: Upload APK
+      - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: vcam-debug-apk
